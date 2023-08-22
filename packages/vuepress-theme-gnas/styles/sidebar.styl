@@ -1,0 +1,97 @@
+.sidebar {
+    padding: 2rem 2.5rem 1.5rem;
+
+    .sidebar-links > li:not(:first-child) {
+        margin: 0 !important;
+    }
+
+    >.sidebar-links >li:first-child {
+        >.sidebar-group {
+            padding: 0;
+            margin: 0;
+            border: none;
+        }
+    }
+
+    .sidebar-heading, .sidebar-links .sidebar-link {
+        transition-property: all;
+        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        transition-duration: 0.15s;
+
+        &::before {
+            position: absolute;
+            top: 2px;
+            bottom: 0px;
+            left: 0px;
+            margin: auto;
+            display: block;
+            height: 0px;
+            width: 0px;
+            border-radius: 50%;
+            transition-property: all;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            transition-duration: 0.15s;
+            --tw-bg-opacity: 1;
+            background-color: $accentColor;
+            content: '';
+        }
+
+        &.active {
+            padding-left: 1rem !important;
+            color: $textColor;
+
+            &::before {
+                height: 0.375rem;
+                width: 0.375rem;
+            }
+        }
+    }
+
+    .sidebar-heading {
+        position: relative;
+        margin: 0 !important;
+        border: none !important;
+        padding: 1rem 0 1rem !important;
+        color: $accentColor !important;
+        font-size: 1em !important;
+    }
+
+    .sidebar-links {
+        padding: 0 !important;
+
+        .sidebar-link {
+            line-height: 1.75rem;
+            position: relative;
+            padding-left: 0;
+            font-size: 0.9rem !important;
+            border: none;
+
+            &.sidebar-heading {
+                padding-top: 0.35rem !important;
+                padding-bottom: 0.35rem !important;
+                font-size: 1em !important;
+                font-weight: bold !important;
+            }
+        }
+    }
+
+    .sidebar-group {
+        margin-top: 1.5rem;
+        padding-top: 0.5rem;
+        border-top: 1px solid #ececec;
+    }
+
+    .sidebar-group.collapsable {
+        .sidebar-heading {
+            font-weight: bold;
+            opacity: 1 !important;
+        }
+    }
+
+    .sidebar-link {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        font-weight: 400 !important;
+    }
+}
