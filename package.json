@@ -1,7 +1,7 @@
 {
-  "name": "vuepress-theme-gnas",
-  "author": "ShnHz",
-  "description": "A simple and beautiful vuepress Blog & Doc theme.",
+  "name": "blogs",
+  "author": "gaoge",
+  "description": "A personal blogs.",
   "scripts": {
     "dev": "NODE_OPTIONS=--openssl-legacy-provider vuepress dev example",
     "build:example": "NODE_OPTIONS=--openssl-legacy-provider vuepress build example",
