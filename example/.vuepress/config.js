@@ -129,7 +129,15 @@ module.exports = {
         link: "https://github.com/gaolaoge/blogs",
       },
     ],
-    sidebar: [],
+    sidebar: [
+      "/views/notes/Enter",
+      {
+        title: "ECMAScript",
+        path: "/views/notes/ECMAScript/Enter",
+        groupClass: true,
+        children: ["/views/notes/ECMAScript/Promise"],
+      },
+    ],
     sidebarDepth: 0,
     activeHeaderLinks: false,
 
