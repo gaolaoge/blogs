@@ -3,6 +3,15 @@
 # 确保脚本抛出遇到的错误
 set -e
 
+# 检查 Node 版本是否为 v20.4.0
+current_version=$(node -v)
+if [[ $current_version == v20.4.0 ]]; then
+    echo "当前node版本为 v20.4.0 无需切换"
+else
+    echo "切换node版本为到 v20.4.0"
+    nvm use 20.4.0
+fi
+
 git add .
 git commit -m $1
 git push
