@@ -5,8 +5,8 @@
             <p>{{$site.themeConfig.author}}</p>
         </div>
         <div class="data-info">
-            <div @click="$router.push('/blog/Archives.html')" class="data-info-item">
-                <p class="data-info-item-title">文章</p>
+            <div @click="$router.push('/views/Tag.html')" class="data-info-item">
+                <p class="data-info-item-title">日志</p>
                 <p class="data-info-item-data">{{ $blogList.length }}</p>
             </div>
             <div class="data-info-item">
