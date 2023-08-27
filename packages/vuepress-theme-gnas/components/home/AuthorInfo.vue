@@ -1,96 +1,116 @@
 <template>
-    <div class="author-info-wrap">
-        <div class="avatar-info">
-            <img :src="$site.themeConfig.home.authorConfig.avatar" />
-            <p>{{$site.themeConfig.author}}</p>
-        </div>
-        <div class="data-info">
-            <div @click="$router.push('/views/Tag.html')" class="data-info-item">
-                <p class="data-info-item-title">日志</p>
-                <p class="data-info-item-data">{{ $blogList.length }}</p>
-            </div>
-            <div class="data-info-item">
-                <p class="data-info-item-title">标签</p>
-                <p class="data-info-item-data">{{ $tagList.length }}</p>
-            </div>
-        </div>
-        <div @click="addBookMark" class="add-bookmark" v-if="$site.themeConfig.home.authorConfig.bookmark">
-            <i class="el-icon-s-flag"></i>
-            加入书签
-        </div>
-        <div class="social-info">
-            <a :href="$site.themeConfig.home.authorConfig.github" v-if="$site.themeConfig.home.authorConfig.github">
-                <i class="gnas-i gnas-i-github-fill"></i>
-            </a>
-            <i @click="openAlipay" class="gnas-i gnas-i-alipay" v-if="$site.themeConfig.home.authorConfig.alipay"></i>
-            <i @click="openQQ" class="gnas-i gnas-i-QQ-circle-fill" v-if="$site.themeConfig.home.authorConfig.qq"></i>
-            <i @click="openWechat" class="gnas-i gnas-i-wechat-fill" v-if="$site.themeConfig.home.authorConfig.wx"></i>
-            <a :href="`mailto:${$site.themeConfig.home.authorConfig.email}`" v-if="$site.themeConfig.home.authorConfig.email">
-                <i class="gnas-i gnas-i-email"></i>
-            </a>
-        </div>
+  <div class="author-info-wrap">
+    <div class="avatar-info">
+      <img :src="$site.themeConfig.home.authorConfig.avatar" />
+      <p>{{ $site.themeConfig.author }}</p>
     </div>
+    <div class="data-info">
+      <div @click="$router.push('/views/Tag.html')" class="data-info-item">
+        <p class="data-info-item-title">日志</p>
+        <p class="data-info-item-data">{{ $blogList.length }}</p>
+      </div>
+      <div class="data-info-item">
+        <p class="data-info-item-title">标签</p>
+        <p class="data-info-item-data">{{ $tagList.length }}</p>
+      </div>
+    </div>
+    <div
+      @click="addBookMark"
+      class="add-bookmark"
+      v-if="$site.themeConfig.home.authorConfig.bookmark"
+    >
+      <i class="el-icon-s-flag"></i>
+      加入书签
+    </div>
+    <div class="social-info">
+      <a
+        :href="$site.themeConfig.home.authorConfig.github"
+        v-if="$site.themeConfig.home.authorConfig.github"
+      >
+        <i class="gnas-i gnas-i-github-fill"></i>
+      </a>
+      <i
+        @click="openAlipay"
+        class="gnas-i gnas-i-alipay"
+        v-if="$site.themeConfig.home.authorConfig.alipay"
+      ></i>
+      <i
+        @click="openQQ"
+        class="gnas-i gnas-i-QQ-circle-fill"
+        v-if="$site.themeConfig.home.authorConfig.qq"
+      ></i>
+      <i
+        @click="openWechat"
+        class="gnas-i gnas-i-wechat-fill"
+        v-if="$site.themeConfig.home.authorConfig.wx"
+      ></i>
+      <a
+        :href="`mailto:${$site.themeConfig.home.authorConfig.email}`"
+        v-if="$site.themeConfig.home.authorConfig.email"
+      >
+        <i class="gnas-i gnas-i-email"></i>
+      </a>
+    </div>
+  </div>
 </template>
 <script>
-
 export default {
-    methods: {
-        /**
+  methods: {
+    /**
      * 添加书签
      */
-        addBookMark() {
-            this.$notify({
-                message: '按 CTRL + D 将本页加入书签',
-                position: 'bottom-right',
-                showClose: false,
-                duration: 2000,
-                customClass: 'main-them-notify',
-            })
-        },
-        /**
-         * 打开QQ
-         */
-        openQQ() {
-            this.$notify({
-                message: `QQ号：${this.$site.themeConfig.home.authorConfig.qq}`,
-                position: 'bottom-right',
-                showClose: true,
-                duration: 0,
-                customClass: 'main-them-notify',
-            })
-        },
-        /**
-         * 打开微信
-         */
-        openWechat() {
-            this.$notify({
-                message: `微信号：${this.$site.themeConfig.home.authorConfig.wx}`,
-                position: 'bottom-right',
-                showClose: true,
-                duration: 0,
-                customClass: 'main-them-notify',
-            })
-        },
-        /**
-         * 打开支付宝
-         */
-        openAlipay() {
-            this.$notify({
-                title: '打赏一下吧~',
-                position: 'bottom-right',
-                dangerouslyUseHTMLString: true,
-                message:
-                    `<img src="${this.$site.themeConfig.home.authorConfig.alipay}" style="width:200px"/>`,
-                duration: 0,
-                customClass: 'ercode-notify',
-            })
-        },
-    }
-}
+    addBookMark() {
+      this.$notify({
+        message: "按 CTRL + D 将本页加入书签",
+        position: "bottom-right",
+        showClose: false,
+        duration: 2000,
+        customClass: "main-them-notify",
+      });
+    },
+    /**
+     * 打开QQ
+     */
+    openQQ() {
+      this.$notify({
+        message: `QQ号：${this.$site.themeConfig.home.authorConfig.qq}`,
+        position: "bottom-right",
+        showClose: true,
+        duration: 0,
+        customClass: "main-them-notify",
+      });
+    },
+    /**
+     * 打开微信
+     */
+    openWechat() {
+      this.$notify({
+        message: `微信号：${this.$site.themeConfig.home.authorConfig.wx}`,
+        position: "bottom-right",
+        showClose: true,
+        duration: 0,
+        customClass: "main-them-notify",
+      });
+    },
+    /**
+     * 打开支付宝
+     */
+    openAlipay() {
+      this.$notify({
+        title: "打赏一下吧~",
+        position: "bottom-right",
+        dangerouslyUseHTMLString: true,
+        message: `<img src="${this.$site.themeConfig.home.authorConfig.alipay}" style="width:200px"/>`,
+        duration: 0,
+        customClass: "ercode-notify",
+      });
+    },
+  },
+};
 </script>
 <style lang="stylus">
 .author-info-wrap {
-    width 100% 
+    width 100%
     padding: 1rem 1.2rem;
     border-radius: 8px;
     background: #fff;

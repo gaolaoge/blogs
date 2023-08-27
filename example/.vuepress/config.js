@@ -69,7 +69,7 @@ module.exports = {
         qq: 183412808,
         wx: "gaolaogui2",
         email: "183412808@qq.com",
-        alipay: "/img/alipay_ercode.jpg",
+        // alipay: "/img/alipay_ercode.jpg",
       },
       loveConfig: false,
       carouselConfig: {
