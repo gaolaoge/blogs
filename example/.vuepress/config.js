@@ -137,6 +137,12 @@ module.exports = {
         groupClass: true,
         children: ["/views/notes/ECMAScript/Promise"],
       },
+      {
+        title: "React",
+        path: "/views/notes/REACT/Enter",
+        groupClass: true,
+        children: ["/views/notes/REACT/Hooks"],
+      },
     ],
     sidebarDepth: 0,
     activeHeaderLinks: false,
