@@ -65,6 +65,12 @@ module.exports = {
         "./img/bg2.jpeg",
         "./img/bg3.jpeg",
         "./img/bg4.jpeg",
+        "./img/bg5.jpeg",
+        "./img/bg6.jpeg",
+        "./img/bg7.jpeg",
+        "./img/bg8.jpeg",
+        "./img/bg9.jpeg",
+        "./img/bg11.jpeg",
       ],
       authorConfig: {
         enable: true,
