@@ -140,8 +140,6 @@ export function resolveSidebarItems(page, regularPath, site, localePath) {
     themeConfig.sidebar ||
     localeConfig?.sidebars[page?.frontmatter?.mode];
 
-  debugger;
-
   if (!sidebarConfig) {
     return [];
   } else {

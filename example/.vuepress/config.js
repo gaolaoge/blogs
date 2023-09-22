@@ -53,7 +53,7 @@ module.exports = {
         },
       ],
     },
-    logo: "./img/logo.png",
+    logo: "/img/logo.png",
     home: {
       //   titleLogo: "/img/titleLogo.gif",
       titleLogo: false,
