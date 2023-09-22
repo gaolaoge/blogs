@@ -1,6 +1,6 @@
 ---
-title: Promise
-# config: { dir: true }
+title: "Promise"
+mode: "notes"
 ---
 
 Promise 是一个对象，对象和函数的区别就是对象可以保存状态，函数不可以（闭包除外）。

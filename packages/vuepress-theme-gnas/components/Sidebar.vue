@@ -1,28 +1,25 @@
 <template>
-  <aside class="sidebar">
+  <aside class="sidebar" :class="{ isMobileSize: isMobileSize }">
     <NavLinks />
 
     <slot name="top" />
 
-    <SidebarLinks
-      :depth="0"
-      :items="items"
-    />
+    <SidebarLinks :depth="0" :items="items" />
     <slot name="bottom" />
   </aside>
 </template>
 
 <script>
-import SidebarLinks from '@theme/components/SidebarLinks.vue'
-import NavLinks from '@theme/components/NavLinks.vue'
+import SidebarLinks from "@theme/components/SidebarLinks.vue";
+import NavLinks from "@theme/components/NavLinks.vue";
 
 export default {
-  name: 'Sidebar',
+  name: "Sidebar",
 
   components: { SidebarLinks, NavLinks },
 
-  props: ['items']
-}
+  props: ["items", "isMobileSize"],
+};
 </script>
 
 <style lang="stylus">
@@ -44,6 +41,8 @@ export default {
       line-height 1.25rem
       font-size 1.1em
       padding 0.5rem 0 0.5rem 1.5rem
+  &.isMobileSize
+    padding-top: 54px
   & > .sidebar-links
     padding 1.5rem 0
     & > li > a.sidebar-link

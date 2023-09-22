@@ -1,3 +1,4 @@
 ---
+mode: home
 home: true
 ---

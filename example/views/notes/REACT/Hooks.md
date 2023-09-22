@@ -1,5 +1,6 @@
 ---
-title: Hooks
+title: "Hooks"
+mode: "notes"
 ---
 
 ### UI 是什么？

@@ -129,21 +129,31 @@ module.exports = {
         link: "https://github.com/gaolaoge/blogs",
       },
     ],
-    sidebar: [
-      "/views/notes/Enter",
-      {
-        title: "ECMAScript",
-        path: "/views/notes/ECMAScript/Enter",
-        groupClass: true,
-        children: ["/views/notes/ECMAScript/Promise"],
-      },
-      {
-        title: "React",
-        path: "/views/notes/REACT/Enter",
-        groupClass: true,
-        children: ["/views/notes/REACT/Hooks"],
-      },
-    ],
+    sidebars: {
+      notes: [
+        "/views/notes/Enter",
+        {
+          title: "ECMAScript",
+          path: "/views/notes/ECMAScript/Enter",
+          collapsable: false,
+          // groupClass: true,
+          children: ["/views/notes/ECMAScript/Promise"],
+        },
+        {
+          title: "React",
+          path: "/views/notes/REACT/Enter",
+          collapsable: false,
+          // groupClass: true,
+          children: ["/views/notes/REACT/Hooks"],
+        },
+        {
+          title: "Webpack",
+          path: "/views/notes/WEBPACK/Enter",
+          collapsable: false,
+          children: ["/views/notes/WEBPACK/LifeCycle"],
+        },
+      ],
+    },
     sidebarDepth: 0,
     activeHeaderLinks: false,
 

@@ -1,5 +1,6 @@
 ---
-title: React
+title: "React"
+mode: "notes"
 ---
 
 官网对它的定义是：一个用于构建 Web 和原生用户界面的库。

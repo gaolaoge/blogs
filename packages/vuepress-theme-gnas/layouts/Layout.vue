@@ -1,6 +1,7 @@
 <template>
   <CommonLayout
     :sidebarItems="sidebarItems"
+    :isMobileSize="isMobileSize"
     :shouldShowNavbar="shouldShowNavbar"
     v-if="isRouterAlive"
     :shouldShowSidebar="shouldShowSidebar"
@@ -38,6 +39,7 @@ export default {
     return {
       isRouterAlive: true,
       isRouterAliveCount: false,
+      isMobileSize: false,
     };
   },
   computed: {
@@ -57,13 +59,11 @@ export default {
     },
     shouldShowSidebar() {
       const { frontmatter } = this.$page;
-      return (
-        !frontmatter.home &&
-        frontmatter.sidebar !== false &&
-        this.sidebarItems.length &&
-        !["vitae", "tag", "archives"].includes(frontmatter.mode) &&
-        !this.$page.regularPath.includes(this.$site.themeConfig.blogBase)
-      );
+      return ["home", "vitae", "tag", "archives"].includes(frontmatter.mode)
+        ? this.isMobileSize
+        : frontmatter.sidebar !== false &&
+            this.sidebarItems.length &&
+            !this.$page.regularPath.includes(this.$site.themeConfig.blogBase);
     },
     sidebarItems() {
       return resolveSidebarItems(
@@ -79,6 +79,18 @@ export default {
       );
       return this.$site.themeConfig.home.bannerList[index];
     },
+  },
+  mounted() {
+    const MOBILE_DESKTOP_BREAKPOINT = 719; // refer to config.styl
+    const handleLinksWrapWidth = () => {
+      if (document.documentElement.clientWidth < MOBILE_DESKTOP_BREAKPOINT) {
+        this.isMobileSize = true;
+      } else {
+        this.isMobileSize = false;
+      }
+    };
+    handleLinksWrapWidth();
+    window.addEventListener("resize", handleLinksWrapWidth, false);
   },
   methods: {
     reload() {

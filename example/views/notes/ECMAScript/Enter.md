@@ -1,6 +1,6 @@
 ---
-title: ECMAScript
-# config: { dir: true }
+title: "ECMAScript"
+mode: "notes"
 ---
 
 `ECMAScript` 简称 ES，是一个脚本语言。
