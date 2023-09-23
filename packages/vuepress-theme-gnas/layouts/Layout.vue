@@ -1,25 +1,11 @@
 <template>
-  <CommonLayout
-    :sidebarItems="sidebarItems"
-    :isMobileSize="isMobileSize"
-    :shouldShowNavbar="shouldShowNavbar"
-    v-if="isRouterAlive"
-    :shouldShowSidebar="shouldShowSidebar"
-    :bannerImg="bannerImg"
-    @toggleSidebar="toggleSidebar"
-  >
+  <CommonLayout :sidebarItems="sidebarItems" :isMobileSize="isMobileSize" :shouldShowNavbar="shouldShowNavbar"
+    v-if="isRouterAlive" :shouldShowSidebar="shouldShowSidebar" :bannerImg="bannerImg" @toggleSidebar="toggleSidebar">
     <ClientOnly>
-      <component
-        is="Pages"
-        :bannerImg="bannerImg"
-        :sidebarItems="sidebarItems"
-      />
+      <component is="Pages" :bannerImg="bannerImg" :sidebarItems="sidebarItems" />
     </ClientOnly>
 
-    <FirstLoading
-      :bannerImg="bannerImg"
-      v-if="$site.themeConfig.firstLoading != false && !isRouterAliveCount"
-    />
+    <FirstLoading :bannerImg="bannerImg" v-if="$site.themeConfig.firstLoading != false && !isRouterAliveCount" />
   </CommonLayout>
 </template>
 <script>
@@ -40,6 +26,7 @@ export default {
       isRouterAlive: true,
       isRouterAliveCount: false,
       isMobileSize: false,
+      isSidebarOpen: false,
     };
   },
   computed: {
@@ -60,10 +47,10 @@ export default {
     shouldShowSidebar() {
       const { frontmatter } = this.$page;
       return ["home", "vitae", "tag", "archives"].includes(frontmatter.mode)
-        ? this.isMobileSize
+        ? this.isMobileSize && this.isSidebarOpen
         : frontmatter.sidebar !== false &&
-            this.sidebarItems.length &&
-            !this.$page.regularPath.includes(this.$site.themeConfig.blogBase);
+        this.sidebarItems.length &&
+        !this.$page.regularPath.includes(this.$site.themeConfig.blogBase);
     },
     sidebarItems() {
       return resolveSidebarItems(
@@ -101,7 +88,8 @@ export default {
       });
     },
     toggleSidebar(isSidebarOpen) {
-      this.$emit("toggle-sidebar", isSidebarOpen);
+      // this.$emit("toggle-sidebar", isSidebarOpen);
+      this.isSidebarOpen = isSidebarOpen
     },
   },
   provide() {

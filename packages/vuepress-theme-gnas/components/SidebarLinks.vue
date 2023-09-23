@@ -1,25 +1,9 @@
 <template>
-  <ul
-    v-if="items.length"
-    class="sidebar-links"
-  >
-    <li
-      v-for="(item, i) in items"
-      :key="i"
-    >
-      <SidebarGroup
-        v-if="item.type === 'group'"
-        :item="item"
-        :open="i === openGroupIndex"
-        :collapsable="item.collapsable || item.collapsible"
-        :depth="depth"
-        @toggle="toggleGroup(i)"
-      />
-      <SidebarLink
-        v-else
-        :sidebar-depth="sidebarDepth"
-        :item="item"
-      />
+  <ul v-if="items.length" class="sidebar-links">
+    <li v-for="(item, i) in items" :key="i">
+      <SidebarGroup v-if="item.type === 'group'" :item="item" :open="i === openGroupIndex"
+        :collapsable="item.collapsable || item.collapsible" :depth="depth" @toggle="toggleGroup(i)" />
+      <SidebarLink v-else :sidebar-depth="sidebarDepth" :item="item" />
     </li>
   </ul>
 </template>
@@ -41,24 +25,24 @@ export default {
     'initialOpenGroupIndex'
   ],
 
-  data () {
+  data() {
     return {
       openGroupIndex: this.initialOpenGroupIndex || 0
     }
   },
 
   watch: {
-    '$route' () {
+    '$route'() {
       this.refreshIndex()
     }
   },
 
-  created () {
+  created() {
     this.refreshIndex()
   },
 
   methods: {
-    refreshIndex () {
+    refreshIndex() {
       const index = resolveOpenGroupIndex(
         this.$route,
         this.items
@@ -68,17 +52,22 @@ export default {
       }
     },
 
-    toggleGroup (index) {
+    toggleGroup(index) {
       this.openGroupIndex = index === this.openGroupIndex ? -1 : index
     },
 
-    isActive (page) {
+    isActive(page) {
       return isActive(this.$route, page.regularPath)
     }
+  },
+
+  mounted() {
+    console.log(this.items)
+
   }
 }
 
-function resolveOpenGroupIndex (route, items) {
+function resolveOpenGroupIndex(route, items) {
   for (let i = 0; i < items.length; i++) {
     const item = items[i]
     if (descendantIsActive(route, item)) {
@@ -88,7 +77,7 @@ function resolveOpenGroupIndex (route, items) {
   return -1
 }
 
-function descendantIsActive (route, item) {
+function descendantIsActive(route, item) {
   if (item.type === 'group') {
     const childIsActive = item.path && isActive(route, item.path)
     const grandChildIsActive = item.children.some(child => {

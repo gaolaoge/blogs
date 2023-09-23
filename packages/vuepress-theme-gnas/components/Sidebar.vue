@@ -28,6 +28,7 @@ export default {
     padding 0
     margin 0
     list-style-type none
+    line-height inherit
   a
     display inline-block
   .nav-links

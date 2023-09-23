@@ -138,6 +138,17 @@ export default {
     }
 }
 
+@media (max-width: 1200px) {
+    .home-wrap {
+        main {
+            width:100%
+            aside {
+                width: 300px
+            }
+            }
+            }
+    }
+
 @media (max-width: $MQMobile) {
         .home-wrap {
             .title-wrap{
