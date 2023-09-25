@@ -164,6 +164,7 @@ module.exports = {
           children: [
             "/views/notes/WEBPACK/Options",
             "/views/notes/WEBPACK/Babel&TS&ESLint",
+            "/views/notes/WEBPACK/Styles",
             // "/views/notes/WEBPACK/LifeCycle",
           ],
         },
