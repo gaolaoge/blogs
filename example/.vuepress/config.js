@@ -166,7 +166,7 @@ module.exports = {
             "/views/notes/WEBPACK/Babel&TS&ESLint",
             "/views/notes/WEBPACK/Styles",
             "/views/notes/WEBPACK/VUE&REACT",
-            // "/views/notes/WEBPACK/Img",
+            "/views/notes/WEBPACK/Img",
             // "/views/notes/WEBPACK/LifeCycle",
           ],
         },
