@@ -8,12 +8,15 @@ current_version=$(node -v)
 if [[ $current_version == v20.4.0 ]]; then
     echo "当前node版本为 v20.4.0 无需切换"
 else
-    echo "切换node版本为到 v20.4.0"
-    nvm use 20.4.0
+    echo "需要切换node版本为到 v20.4.0"
+    exit
 fi
 
+echo "提交的 commit 信息："
+read commit_message
+
 git add .
-git commit -m $1
+git commit -m "$commit_message"
 git push
 
 # 生成静态文件
@@ -27,7 +30,7 @@ echo 'gaolaogui.cc' >CNAME
 
 git init
 git add .
-git commit -m $1
+git commit -m $commit_message
 
 # 如果发布到 https://<USERNAME>.github.io
 # git push -f git@github.com:<USERNAME>/<USERNAME>.github.io.git master
