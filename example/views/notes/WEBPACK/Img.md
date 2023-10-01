@@ -112,3 +112,119 @@ Web 页面中针对图片做各种优化动作很多：
 # 类似功能的 Loader 有很多
 npm i image-webpack-loader -D
 ```
+
+```js
+module.exports = {
+  module: {
+    rules: [
+        {
+            test: /\.(png|jpeg|gif)$/i,
+            type: 'asset',
+            generator: {
+                filename: "static/image/[hash:10][ext][query]" 
+            },
+            use: [
+                'image-webpack-loader'
+            ]
+        },
+    ]
+  }
+}
+```
+
+```yml
+# 执行打包，得到压缩后图像资源
+npx webpack
+```
+
+<img  src="./images/image-webpack-loader.png" width="520">
+
+<br>
+
+image-webpack-loader 底层依赖于 imagemin 及一系列的图像优化工具：
+
+- mozjpeg：用于压缩 JPG(JPEG) 图片；
+- optipng：用于压缩 PNG 图片；
+- pngquant：同样用于压缩 PNG 图片；
+- svgo：用于压缩 SVG 图片；
+- gifsicle：用于压缩 Gif 图；
+- webp：用于将 JPG/PNG 图压缩并转化为 WebP 图片格式。
+
+```js
+// webpack.config.js
+module.exports = {
+    module: {
+        rules: [
+            {
+                test: /\.(png|jpeg|gif)$/i,
+                type: 'asset',
+                use: [
+                    {
+                        loader: 'image-webpack-loader',
+                        options: {
+                            disable: process.env.NODE_ENV === 'development',  // 图像压缩是一种耗时操作，建议只在生产环境下开启
+                            // jpeg 压缩配置
+                            mozjpeg: {
+                                quality: 80
+                            },
+                        }
+                    }
+                ]
+            }
+        ],
+    },
+};
+```
+
+### 响应式图片
+
+移动互联网时代客户端设备屏幕尺寸差距极大，为不同设备提供不同的分辨率、不同尺寸的图片 —— 也就是所谓的响应式图片  —— 是多端项目优化的一个重点。
+
+```yml
+#
+npm i responsive-loader sharp -D
+```
+
+```js
+// webpack.config.js
+module.exports = {
+    module: {
+        rules: [
+            {
+                test: /\.(png|jpg)$/,
+                oneOf: [{
+                    type: "javascript/auto",
+                    resourceQuery: /sizes?/,    // 过滤出需要被自适应的图像资源，通常没必要对项目里所有图片都施加响应式特性
+                    use: [{
+                        loader: "responsive-loader",
+                        options: {
+                            adapter: require("responsive-loader/sharp"),  
+                            name: 'static/media/[name]-[hash:7]-[width].[ext]',  // 定义路径 命名规则
+                        },
+                    }],
+                }, {
+                    type: "asset/resource",
+                }],
+            }
+        ],
+    }
+};
+```
+
+```js
+import xiaoliuya from './assets/xiaoliuya.jpeg?sizes[]=300,sizes[]=600,sizes[]=1000'
+
+const imageNode = document.createElement('IMG')
+imageNode.setAttribute('srcSet', xiaoliuya.srcSet)
+imageNode.setAttribute('src', xiaoliuya.src)
+imageNode.setAttribute('loading', 'lazy')
+
+document.body.append(imageNode)
+```
+
+```yml
+# 执行打包，得到自适应img节点
+npx webpack
+```
+
+<img src="./images/responsive-loader.png" width=700/>
