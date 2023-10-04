@@ -161,6 +161,7 @@ module.exports = {
           title: "Webpack",
           path: "/views/notes/WEBPACK/Enter",
           // collapsable: false,
+          groupClass: true,
           children: [
             "/views/notes/WEBPACK/Options",
             "/views/notes/WEBPACK/Babel&TS&ESLint",
@@ -169,6 +170,13 @@ module.exports = {
             "/views/notes/WEBPACK/Img",
             // "/views/notes/WEBPACK/LifeCycle",
           ],
+        },
+        {
+          title: "前端工程化",
+          path: "/views/notes/Engineering/Enter",
+          // collapsable: false,
+          groupClass: true,
+          // children: ["/views/notes/Engineering/Modules"],
         },
       ],
     },

@@ -1,0 +1,865 @@
+---
+title: "组件化"
+mode: "notes"
+---
+
+早期的 JS 项目很简单，一个项目共享作用域是可以的，随着 web 的发展项目越发复杂，需要大量引用外部 JS 文件，共用作用域会不可避免的发生声明覆盖和被动修改的情况。
+
+拥有私用作用域，有限可控的抛出能力的组件成为必然发展趋势。
+
+esModule 则是从语法层面做到模块化功能，属于后期新增语法，故存在兼容性问题。
+
+# Commonjs
+
+commonJs 本质上是一种社区规范，实现上是利用函数作用域实现变量隔离达成的模块化能力，所以兼容性上没有问题。
+
+特点：
+
+- commonjs 中每个 js 文件都是一个单独的模块，称之为 module
+- module 中包含了 commonjs 的核心变量：exports、module.exports、require；
+- exports 和 module.exports 可以负责对模块的内容进行导出
+- require 可以导入模块（包括：系统模块，自定义模块，第三方库模块）
+
+```js
+let name = "《React进阶实践指南》";
+module.exports = function sayName() {
+  return name;
+};
+```
+
+```js
+const sayName = require("./hello.js");
+module.exports = function say() {
+  return {
+    name: sayName(),
+    author: "我不是外星人",
+  };
+};
+```
+
+## 包装逻辑
+
+每个模块文件中默认存在 `exports`，`require`，`module` 三个变量，可以直接使用它们。在 nodejs 中还存在 `__filename` 和 `__dirname` 变量。
+
+- `exports` 当前模块导出的属性；
+- `require` 引入模块的方法；
+- `module` 记录当前模块信息；
+-
+
+```js
+(function (exports, require, module, __filename, __dirname) {
+  const sayName = require("./hello.js");
+  module.exports = function say() {
+    return {
+      name: sayName(),
+      author: "我不是外星人",
+    };
+  };
+});
+```
+
+在 Commonjs 规范下模块中，会形成一个包装函数，代码将作为包装函数的执行上下文，使用的 `require` ，`exports` ，`module` 本质上是通过形参的方式传递到包装函数中的：
+
+```js
+function wrapper(script) {
+  return (
+    "(function (exports, require, module, __filename, __dirname) {" +
+    script +
+    "\n})"
+  );
+}
+```
+
+包装函数执行。
+
+```js
+const modulefunction = wrapper(`
+  const sayName = require('./hello.js')
+    module.exports = function say(){
+        return {
+            name:sayName(),
+            author:'我不是外星人'
+        }
+    }
+`);
+```
+
+modulefunction 暂时是一个字符串。
+
+```js
+runInThisContext(modulefunction)(
+  module.exports,
+  require,
+  module,
+  __filename,
+  __dirname
+);
+```
+
+在模块加载的时候，会通过 runInThisContext (可以理解成 eval ：字符串解析执行) 执行 `modulefunction` ，传入`require` ，`exports` ，`module` 等参数。
+
+### require
+
+```js
+const fs = require("fs"); // ①核心模块
+const sayName = require("./hello.js"); // ② 文件模块
+const crypto = require("crypto-js"); // ③第三方自定义模块
+```
+
+当 require 方法执行时，会接收一个唯一参数作为一个标识符，commonjs 对于不同标识符的处理流程不相同，但是**目的都是为了找到对应的模块**。
+
+**require 加载标识符原则**
+
+- 首先像 fs ，http ，path 等标识符，会被作为 nodejs 的**核心模块**。
+- `./` 和 `../` 开头作为相对路径的**文件模块**， `/` 开头作为绝对路径的**文件模块**。
+- 非路径形式也非核心模块的模块，将作为**自定义模块**
+
+**核心模块的处理：**
+
+核心模块的优先级仅次于缓存加载，已被预先编译成二进制代码，所以加载核心模块过程速度最快。
+
+**路径形式的文件模块处理：**
+
+已 `./` ，`../` 和 `/` 开始的标识符，会被当作文件模块处理。`require()` 方法会将路径转换成真实路径，并以真实路径作为索引，将编译后的结果缓存起来，第二次加载的时候会更快。至于**怎么缓存**的？我们稍后会讲到。
+
+**自定义模块处理：** 自定义模块，一般指的是非核心的模块，它可能是一个文件或者一个包，它的查找会遵循以下原则：
+
+- 在当前目录下的 `node_modules` 目录查找。
+- 如果没有，在父级目录的 `node_modules` 查找，如果没有在父级目录的父级目录的 `node_modules` 中查找。
+- 沿着路径向上递归，直到根目录下的 `node_modules` 目录。
+- 在查找过程中，会找 `package.json` 下 main 属性指向的文件，如果没有 `package.json` ，在 node 环境下会以此查找 `index.js` ，`index.json` ，`index.node`
+
+查找流程如下图：
+
+<img src="./images/path.jpeg" width=680 />
+
+**require 模块引入和处理**
+
+CommonJS 模块**同步加载并执行**模块文件，  
+执行阶段分析模块依赖，采用**深度优先遍历**，执行顺序是父 -> 子 -> 父。  
+例：
+
+```js
+// a.js
+const getMes = require("./b");
+console.log("我是 a 文件");
+exports.say = function () {
+  const message = getMes();
+  console.log(message);
+};
+```
+
+```js
+// b.js
+const say = require("./a");
+const object = {
+  name: "《React进阶实践指南》",
+  author: "我不是外星人",
+};
+console.log("我是 b 文件");
+module.exports = function () {
+  return object;
+};
+```
+
+```js
+// main.js
+const a = require("./a");
+const b = require("./b");
+
+console.log("node 入口文件");
+```
+
+接下来终端输入 `node main.js` 运行 `main.js`，效果如下：
+
+![img](https://bytedance.feishu.cn/space/api/box/stream/download/asynccode/?code=YjA2ZGRmMzBjNTc5YjMwMmE5ZWY0NTExNDE5YzFjY2Rfd1hDSVFMVDFZdDZsTUFDZU45RnZId0ozZTc2ZnNHdkdfVG9rZW46Ym94Y24zTTZIcXhpcU10Zjk0RWNtV2NGZjJiXzE2OTUwMzcxNjQ6MTY5NTA0MDc2NF9WNA)
+
+从上面的运行结果可以得出以下结论：
+
+- `main.js` 和 `a.js` 模块都引用了 `b.js` 模块，但是 `b.js` 模块只执行了一次。
+- `a.js` 模块 和 `b.js` 模块互相引用，但是没有造成循环引用的情况。
+- 执行顺序是父 -> 子 -> 父；
+
+**那么** **`Common.js`** **规范是如何实现上述效果的呢？**
+
+## require 加载原理
+
+首先为了弄清楚上述两个问题。我们要明白两个感念，那就是 `module` 和 `Module`。
+
+**`module`** ：在 Node 中每一个 js 文件都是一个 module ，module 上保存了 exports 等信息之外，还有一个 **`loaded`** 表示该模块是否被加载。
+
+- 为 `false` 表示还没有加载；
+- 为 `true` 表示已经加载
+
+**`Module`** ：以 nodejs 为例，整个系统运行之后，会用 `Module` 缓存每一个模块加载的信息
+
+require 的源码大致长如下的样子：
+
+```JavaScript
+ // id 为路径标识符
+function require(id) {
+   /* 查找  Module 上有没有已经加载的 js  对象*/
+   const  cachedModule = Module._cache[id]
+
+   /* 如果已经加载了那么直接取走缓存的 exports 对象  */
+   if(cachedModule){
+    return cachedModule.exports
+  }
+
+  /* 创建当前模块的 module  */const module = { exports: {} ,loaded: false , ...}
+
+  /* 将 module 缓存到  Module 的缓存属性中，路径标识符作为 id */
+  Module._cache[id] = module
+  /* 加载文件 */
+  runInThisContext(wrapper('module.exports = "123"'))(module.exports, require, module, __filename, __dirname)
+  /* 加载完成 */
+  module.loaded = true
+  /* 返回值 */
+  return module.exports
+}
+```
+
+从上面我们总结出一次 `require` 大致流程是这样的；
+
+- require 会接收一个参数——文件标识符，然后分析定位文件，分析过程我们上述已经讲到了，加下来会从 Module 上查找有没有缓存，如果有缓存，那么直接返回缓存的内容。
+- 如果没有缓存，会创建一个 module 对象，**缓存到 Module 上，然后执行文件**，加载完文件，将 loaded 属性设置为 true ，然后返回 module.exports 对象。借此完成模块加载流程。
+- 模块导出就是 return 这个变量的其实跟 a = b 赋值一样， 基本类型导出的是值， 引用类型导出的是引用地址。
+- exports 和 module.exports 持有相同引用，因为最后导出的是 module.exports， 所以对 exports 进行赋值会导致 exports 操作的不再是 module.exports 的引用。
+
+### require 避免重复加载
+
+通过源码分析，require 避免重复加载的方式是通过缓存先将加载的文件缓存到 Module 中，下次再引用直接读取缓存值 module，无需重新再次执行模块。
+
+​ 对应 demo 片段中，首先 `main.js` 引用了 `a.js` ，`a.js` 中 require 了 `b.js` 此时 `b.js` 的 module 放入缓存 `Module` 中，接下来 `main.js` 再次引用 `b.js` ，那么直接走的缓存逻辑。所以 b.js 只会执行一次，也就是在 a.js 引入的时候。
+
+### require 避免循环引用
+
+那么接下来这个循环引用问题，也就很容易解决了。为了让大家更清晰明白，那么我们接下来一起分析整个流程。
+
+- ① 首先执行 `node main.js` ，那么开始执行第一行 `require(a.js)`；
+- ② 那么首先判断 `a.js` 有没有缓存，因为没有缓存，先加入缓存，然后执行文件 a.js （**需要注意 是先加入缓存， 后执行模块内容**）;
+- ③ a.js 中执行第一行，引用 b.js。
+- ④ 那么判断 `b.js` 有没有缓存，因为没有缓存，所以加入缓存，然后执行 b.js 文件。
+- ⑤ b.js 执行第一行，再一次循环引用 `require(a.js)` 此时的 a.js 已经加入缓存，直接读取值。接下来打印 `console.log('我是 b 文件')`，导出方法。
+- ⑥ b.js 执行完毕，回到 a.js 文件，打印 `console.log('我是 a 文件')`，导出方法。
+- ⑦ 最后回到 `main.js`，打印 `console.log('node 入口文件')` 完成这个流程。
+
+不过这里我们要注意问题：
+
+- 如上第 ⑤ 的时候，当执行 b.js 模块的时候，因为 a.js 还没有导出 `say` 方法，所以 b.js 同步上下文中，获取不到 say。
+
+为了进一步验证上面所说的，我们改造一下 `b.js` 如下:
+
+```JavaScript
+const say = require('./a')
+const  object = {
+   name:'《React进阶实践指南》',
+   author:'我不是外星人'
+}
+console.log('我是 b 文件')
+console.log('打印 a 模块' , say)
+
+setTimeout(()=>{
+    console.log('异步打印 a 模块' , say)
+},0)
+
+module.exports = function(){
+    return object
+}
+```
+
+打印结果：
+
+![img](https://bytedance.feishu.cn/space/api/box/stream/download/asynccode/?code=ZmNhYzIzZTAzZGQzNzc0ZTViNzk3Y2E4YTFkOWE0NGFfUlJ1ZFBCaGZPck45NW04UnZaakRSSzEwTWg5MUdvWDZfVG9rZW46Ym94Y25rOWg3eVJ1bFJnb1lGdWpJSzZCcVlnXzE2OTUwMzcxNjQ6MTY5NTA0MDc2NF9WNA)
+
+- 第一次打印 say 为空对象。
+- 第二次打印 say 才看到 b.js 导出的方法。
+
+那么如何获取到 say 呢，有两种办法：
+
+- 一是用动态加载 a.js 的方法，马上就会讲到。
+- 二个就是如上放在异步中加载。
+
+我们注意到 a.js 是用 `exports.say` 方式导出的，如果 a.js 用 module.exports 结果会有所不同。至于有什么不同，为什么？我接下来会讲到。
+
+## require 动态加载
+
+上述我们讲了 `require` 查找文件和加载流程。接下来介绍 `commonjs` 规范下的 require 的另外一个特性——**动态加载**。
+
+require 可以在任意的上下文，动态加载模块。我对上述 a.js 修改。
+
+`a.js`：
+
+```JavaScript
+console.log('我是 a 文件')
+exports.say = function(){
+    const getMes = require('./b')
+    const message = getMes()
+    console.log(message)
+}
+复制代码
+```
+
+`main.js`：
+
+```JavaScript
+const a = require('./a')
+a.say()
+复制代码
+```
+
+- 如上在 a.js 模块的 say 函数中，用 require 动态加载 b.js 模块。然后执行在 main.js 中执行 a.js 模块的 say 方法。
+
+打印结果如下：
+
+![img](https://bytedance.feishu.cn/space/api/box/stream/download/asynccode/?code=MzU5ODBmZmZlNzhjNTk5YjA4Y2M2YjJkMGZmYjQ5MzdfTk9idDZTWkFPUU9MT1p6UnlCc0prdWhmN2xRUW8xd29fVG9rZW46Ym94Y25NZFRCWG5LY090N2xJc3JFT3JQczZiXzE2OTUwMzcxNjQ6MTY5NTA0MDc2NF9WNA)
+
+require 本质上就是一个函数，那么函数可以在任意上下文中执行，来自由地加载其他模块的属性方法。
+
+1. # exports 和 module.exports
+
+系统分析完 `require` ，接下来我们分析一下，`exports` 和 `module.exports`，首先看一下两个的用法。
+
+## exports 使用
+
+**第一种方式：exports** `a.js`
+
+```JavaScript
+exports.name = `《React进阶实践指南》`
+exports.author = `我不是外星人`
+exports.say = function (){
+    console.log(666)
+}
+复制代码
+```
+
+**引用**
+
+```JavaScript
+const a = require('./a')
+console.log(a)
+复制代码
+```
+
+**打印结果：**
+
+![img](https://bytedance.feishu.cn/space/api/box/stream/download/asynccode/?code=MjhhNmQ4ZDFjYmJmYjc2MTNhNGE3MTg3NWM0YmU2OTRfNExSeUxnWjEwclZ1OGdrZ2dRSXlENENpSWhoOHVLMkJfVG9rZW46Ym94Y25SNkhqeTJIbks0dlpXbjI3bGF6MlFlXzE2OTUwMzcxNjQ6MTY5NTA0MDc2NF9WNA)
+
+- exports 就是传入到当前模块内的一个对象，本质上就是 `module.exports`。
+
+**问题：为什么 exports={} 直接赋值一个对象就不可以\*\***呢\***\*？** 比如我们将如上 `a.js` 修改一下：
+
+```JavaScript
+exports={
+    name:'《React进阶实践指南》',
+    author:'我不是外星人',
+    say(){
+        console.log(666)
+    }
+}
+复制代码
+```
+
+**打印结果：**
+
+![img](https://bytedance.feishu.cn/space/api/box/stream/download/asynccode/?code=OGQ0YzVkNTJhNGM3MjgzNGQ3N2E1OGM2YzM0NDcwYThfR1dJb1I2eXA5WlZmb28yS1lSbG9laVNzOVRBd2NBS25fVG9rZW46Ym94Y24wbHdjV01UeE9RT1ZpbVcyRXI4QWhlXzE2OTUwMzcxNjQ6MTY5NTA0MDc2NF9WNA)
+
+理想情况下是通过 ` exports = {}` 直接赋值，不需要在 `exports.a = xxx` 每一个属性，但是如上我们看到了这种方式是无效的。为什么会这样？实际这个是 js 本身的特性决定的。
+
+通过上述讲解都知道 exports ， module 和 require 作为形参的方式传入到 js 模块中。我们直接 ` exports = {}` 修改 exports ，等于重新赋值了形参，那么会重新赋值一份，但是不会在引用原来的形参。举一个简单的例子
+
+```JavaScript
+function wrap (myExports){
+    myExports={
+       name:'我不是外星人'
+   }
+}
+
+let myExports = {
+    name:'alien'
+}
+wrap(myExports)
+console.log(myExports)
+复制代码
+```
+
+**打印：**
+
+![img](https://bytedance.feishu.cn/space/api/box/stream/download/asynccode/?code=MjIwNmYzMTQzNTVjODdiZTcxNTM4NTg5NzgwMTM1ZjJfTkZvZm5palZJaUFYZHFMYnhpZUJlaWdpOFE4dkNoS01fVG9rZW46Ym94Y25yRDB5REZaT1VpN0dWZjFuemg3RDFjXzE2OTUwMzcxNjQ6MTY5NTA0MDc2NF9WNA)
+
+我们期望修改 myExports ，但是没有任何作用。
+
+假设 `wrap` 就是 Commonjs 规范下的包装函数，我们的 js 代码就是包装函数内部的内容。当我们把 myExports 对象传进去，但是直接赋值 ` myExports = { name:'我不是外星人' }` 没有任何作用，相等于内部重新声明一份 `myExports` 而和外界的 myExports 断绝了关系。所以解释了为什么不能 `exports={...} ` 直接赋值。
+
+那么解决上述也容易，只需要函数中像 exports.name 这么写就可以了。
+
+```JavaScript
+function wrap (myExports){
+    myExports.name='我不是外星人'
+}
+复制代码
+```
+
+**打印：**
+
+![img](https://bytedance.feishu.cn/space/api/box/stream/download/asynccode/?code=ZDgxMWE5ZmRiNzBlNzUxY2NmZTc0ZWI4N2Q2ZjczNGZfSDlndnV3WjJ4ak5hUXBvZUhpUllZZ3YwdDlMWDBtQVBfVG9rZW46Ym94Y25iTVMzSVRyMThvU3VzSDJsVHRNc3VoXzE2OTUwMzcxNjQ6MTY5NTA0MDc2NF9WNA)
+
+## module.exports 使用
+
+module.exports 本质上就是 exports ，我们用 module.exports 来实现如上的导出。
+
+```JavaScript
+module.exports ={
+    name:'《React进阶实践指南》',
+    author:'我不是外星人',
+    say(){
+        console.log(666)
+    }
+}
+复制代码
+```
+
+module.exports 也可以单独导出一个函数或者一个类。比如如下：
+
+```JavaScript
+module.exports = function (){
+    // ...
+}
+复制代码
+```
+
+从上述 `require` 原理实现中，我们知道了 exports 和 module.exports 持有相同引用，因为最后导出的是 module.exports 。那么这就说明在一个文件中，我们最好选择 `exports` 和 `module.exports` 两者之一，如果两者同时存在，很可能会造成覆盖的情况发生。比如如下情况：
+
+```JavaScript
+exports.name = 'alien' // 此时 exports.name 是无效的
+module.exports ={
+    name:'《React进阶实践指南》',
+    author:'我不是外星人',
+    say(){
+        console.log(666)
+    }
+}
+复制代码
+```
+
+- 上述情况下 exports.name 无效，会被 `module.exports` 覆盖。
+
+## Q & A
+
+1 那么问题来了？ **既然有了** **`exports`\*\***，为何又出了\*\* **`module.exports `\*\***?\*\*
+
+答：如果我们不想在 commonjs 中导出对象，而是只导出一个**类或者一个函数**再或者其他属性的情况，那么 `module.exports` 就更方便了，如上我们知道 `exports` 会被初始化成一个对象，也就是我们只能在对象上绑定属性，但是我们可以通过 `module.exports` 自定义导出出对象外的其他类型元素。
+
+```JavaScript
+let a = 1
+module.exports = a // 导出函数module.exports = [1,2,3] // 导出数组module.exports = function(){} //导出方法
+复制代码
+```
+
+2 与 `exports` 相比，`module.exports` 有什么缺陷 ？
+
+答：`module.exports` 当导出一些函数等非对象属性的时候，也有一些风险，就比如循环引用的情况下。对象会保留相同的内存地址，就算一些属性是后绑定的，也能间接通过异步形式访问到。但是如果 module.exports 为一个非对象其他属性类型，在循环引用的时候，就容易造成属性丢失的情况发生了。
+
+# ES Module
+
+`Nodejs` 借鉴了 `Commonjs` 实现了模块化 ，从 `ES6` 开始， `JavaScript` 才真正意义上有自己的模块化规范，
+
+Es Module 的产生有很多优势，比如:
+
+- 借助 `Es Module` 的静态导入导出的优势，实现了 `tree shaking`。
+- `Es Module` 还可以 `import()` 懒加载方式实现代码分割。
+
+在 `Es Module` 中用 `export` 用来导出模块，`import` 用来导入模块。但是 `export` 配合 `import` 会有很多种组合情况，接下来我们逐一分析一下。
+
+## 导出 exports 和导入 import
+
+所有通过 export 导出的属性，在 import 中可以通过结构的方式，解构出来。
+
+**export 正常导出，import 导入**
+
+导出模块：`a.js`
+
+```JavaScript
+const name = '《React进阶实践指南》'
+const author = '我不是外星人'
+export { name, author }
+export const say = function (){
+    console.log('hello , world')
+}
+复制代码
+```
+
+导入模块：`main.js`
+
+```JavaScript
+// name , author , say 对应 a.js 中的  name , author , say
+import { name , author , say } from './a.js'
+复制代码
+```
+
+- export { }， 与变量名绑定，命名导出。
+- import { } from 'module'， 导入 `module` 的命名导出 ，module 为如上的 `./a.js`
+- 这种情况下 import { } 内部的变量名称，要与 export { } 完全匹配。
+
+**默认导出 export default**
+
+导出模块：`a.js`
+
+```JavaScript
+const name = '《React进阶实践指南》'
+const author = '我不是外星人'
+const say = function (){
+    console.log('hello , world')
+}
+export default {
+    name,
+    author,
+    say
+}
+复制代码
+```
+
+导入模块：`main.js`
+
+```JavaScript
+import mes from './a.js'
+console.log(mes) //{ name: '《React进阶实践指南》',author:'我不是外星人', say:Function }
+复制代码
+```
+
+- `export default anything` 导入 module 的默认导出。 `anything` 可以是函数，属性方法，或者对象。
+- 对于引入默认导出的模块，`import anyName from 'module'`， anyName 可以是自定义名称。
+
+**混合导入｜导出**
+
+ES6 module 可以使用 export default 和 export 导入多个属性。
+
+导出模块：`a.js`
+
+```JavaScript
+export const name = '《React进阶实践指南》'
+export const author = '我不是外星人'export default  function say (){
+    console.log('hello , world')
+}
+复制代码
+```
+
+导入模块：`main.js` 中有几种导入方式：
+
+第一种：
+
+```JavaScript
+import theSay , { name, author as  bookAuthor } from './a.js'
+console.log(
+    theSay,     // ƒ say() {console.log('hello , world') }
+    name,       // "《React进阶实践指南》"
+    bookAuthor  // "我不是外星人"
+)
+复制代码
+```
+
+第二种：
+
+```JavaScript
+import theSay, * as mes from './a'
+console.log(
+    theSay, // ƒ say() { console.log('hello , world') }
+    mes // { name:'《React进阶实践指南》' , author: "我不是外星人" ，default:  ƒ say() { console.log('hello , world') } }
+)
+复制代码
+```
+
+- 导出的属性被合并到 `mes` 属性上， `export` 被导入到对应的属性上，`export default` 导出内容被绑定到 `default` 属性上。 `theSay` 也可以作为被 `export default` 导出属性。
+
+**重属名导入**
+
+```JavaScript
+import {  name as bookName , say,  author as bookAuthor  } from 'module'
+console.log( bookName , bookAuthor , say ) //《React进阶实践指南》 我不是外星人
+复制代码
+```
+
+- 从 module 模块中引入 name ，并重命名为 bookName ，从 module 模块中引入 author ，并重命名为 bookAuthor。 然后在当前模块下，使用被重命名的名字。
+
+**重定向\*\***导出\*\*
+
+可以把当前模块作为一个中转站，一方面引入 module 内的属性，然后把属性再给导出去。
+
+```JavaScript
+export * from 'module' // 第一种方式
+export { name, author, ..., say } from 'module' // 第二种方式
+export {   name as bookName ,  author as bookAuthor , ..., say } from 'module' //第三种方式
+复制代码
+```
+
+- 第一种方式：重定向导出 module 中的所有导出属性， 但是不包括 `module` 内的 `default` 属性。
+- 第二种方式：从 module 中导入 name ，author ，say 再以相同的属性名，导出。
+- 第三种方式：从 module 中导入 name ，重属名为 bookName 导出，从 module 中导入 author ，重属名为 bookAuthor 导出，正常导出 say 。
+
+**无需导入模块，只运行模块**
+
+```JavaScript
+import 'module'
+复制代码
+```
+
+- 执行 module 不导出值 多次调用 `module` 只运行一次。
+
+**动态导入**
+
+```JavaScript
+const promise = import('module')
+复制代码
+```
+
+- `import('module') `，动态导入返回一个 `Promise`。为了支持这种方式，需要在 webpack 中做相应的配置处理。
+
+## ES6 Module 新特性
+
+### 静态语法
+
+ES6 module 的引入和导出是静态的，`import` 会自动提升到代码的顶层 ，`import` , `export` 不能放在块级作用域或条件语句中。
+
+🙅 错误写法一：
+
+```JavaScript
+function say(){
+  import name from './a.js'
+  export const author = '我不是外星人'
+}
+复制代码
+```
+
+🙅 错误写法二：
+
+```JavaScript
+isexport &&  export const  name = '《React进阶实践指南》'
+复制代码
+```
+
+这种静态语法，在编译过程中确定了导入和导出的关系，所以更方便去查找依赖，更方便去 `tree shaking` (摇树) ， 可以使用 lint 工具对模块依赖进行检查，可以对导入导出加上类型信息进行静态的类型检查。
+
+import 的导入名不能为字符串或在判断语句，下面代码是错误的
+
+🙅 错误写法三：
+
+```JavaScript
+import 'defaultExport' from 'module'let name = 'Export'
+import 'default' + name from 'module'
+```
+
+### 执行特性
+
+ES6 module 和 Common.js 一样，对于相同的 js 文件，会保存静态属性。
+
+但是与 Common.js 不同的是 ，`CommonJS ` 模块同步加载并执行模块文件，ES6 模块**提前加载并执行模块文件**，ES6 模块在预处理阶段分析模块依赖，在执行阶段执行模块，两个阶段都采用深度优先遍历，执行顺序是子 -> 父。
+
+为了验证这一点，看一下如下 demo。
+
+**`main.js`**
+
+```JavaScript
+console.log('main.js开始执行')
+import say from './a'
+import say1 from './b'
+console.log('main.js执行完毕')
+复制代码
+```
+
+**`a.js`**
+
+```JavaScript
+import b from './b'
+console.log('a模块加载')
+export default  function say (){
+    console.log('hello , world')
+}
+复制代码
+```
+
+**`b.js`**
+
+```JavaScript
+console.log('b模块加载')
+export default function sayhello(){
+    console.log('hello,world')
+}
+复制代码
+```
+
+- `main.js` 和 `a.js` 都引用了 `b.js` 模块，但是 b 模块也只加载了一次。
+- 执行顺序是子 -> 父
+
+效果如下：
+
+![img](https://bytedance.feishu.cn/space/api/box/stream/download/asynccode/?code=ZjJlYmRkZGIyYWQ2YTU5ZGZmOTBmYTE3ZDBmOWQ1MTBfdUJpQzd6cHBJVHZRaDFrMUNydXVzREJ5ajV3OEFzbTNfVG9rZW46Ym94Y251dmtxYzlRdUQ3UWpNWmdXUmZJV3RjXzE2OTUwMzcxNjQ6MTY5NTA0MDc2NF9WNA)
+
+### 导出绑定
+
+**不能修改 import 导入的属性**
+
+```
+a.js
+export let num = 1
+export const addNumber = ()=>{
+    num++
+}
+复制代码
+```
+
+`main.js`中
+
+```JavaScript
+import {  num , addNumber } from './a'
+num = 2
+复制代码
+```
+
+如果直接修改，那么会报错。如下所示：
+
+![img](https://bytedance.feishu.cn/space/api/box/stream/download/asynccode/?code=NjUyMzUxNjEzZGJjYzBiMGY0OWEwNzQ3YTAzZTQ4MTVfM2Z0dTF2R09NbWdLNFJMZW1abWR0aTBQdVc5Nmd5R0xfVG9rZW46Ym94Y25pa0Q0bVNGQWhwSEs0U1d3N0hMR2JjXzE2OTUwMzcxNjQ6MTY5NTA0MDc2NF9WNA)
+
+属**性绑定**
+
+所以可以在 `main.js` 中这么修改。
+
+```JavaScript
+import {  num , addNumber } from './a'console.log(num) // num = 1
+addNumber()
+console.log(num) // num = 2
+复制代码
+```
+
+- 如上属性 num 的导入是绑定的。
+
+接下来对 import 属性作出总结：
+
+- 使用 import 被导入的模块运行在严格模式下。
+- 使用 import 被导入的变量是只读的，可以理解默认为 const 装饰，无法被赋值
+- 使用 import 被导入的变量是与原变量绑定/引用的，可以理解为 import 导入的变量无论是否为基本类型都是引用传递。
+
+### import()动态引入
+
+`import()` 返回一个 `Promise` 对象， 返回的 `Promise` 的 then 成功回调中，可以获取模块的加载成功信息。我们来简单看一下 `import()` 是如何使用的。
+
+```
+main.js
+setTimeout(() => {
+    const result  = import('./b')
+    result.then(res=>{
+        console.log(res)
+    })
+}, 0);
+复制代码
+b.js
+export const name ='alien'
+export default function sayhello(){
+    console.log('hello,world')
+}
+复制代码
+```
+
+打印如下：
+
+![img](https://bytedance.feishu.cn/space/api/box/stream/download/asynccode/?code=YzFmOTk0NjFiN2U5ZDBmZDBkZGRkMDIzOWIzMTI3NTJfZHkwWlByTHhaNkNzNkZ4N3VYeU95QmtRWWZCZ2VldnZfVG9rZW46Ym94Y25qZnlWTHFWaUxqWmh2UXNOTGlobjhlXzE2OTUwMzcxNjQ6MTY5NTA0MDc2NF9WNA)
+
+从打印结果可以看出 `import()`的基本特性。
+
+- `import()` 可以动态使用，加载模块。
+- `import()` 返回一个 `Promise` ，成功回调 then 中可以获取模块对应的信息。 `name` 对应 name 属性， `default` 代表 `export default` 。`__esModule` 为 es module 的标识。
+
+### import() 可以做一些什么
+
+**动态加载**
+
+- 首先 `import()` 动态加载一些内容，可以放在条件语句或者函数执行上下文中。
+
+```JavaScript
+if(isRequire){
+    const result  = import('./b')
+}
+复制代码
+```
+
+**懒加载**
+
+- `import()` 可以实现懒加载，举个例子 vue 中的路由懒加载；
+
+```JavaScript
+[
+   {
+        path: 'home',
+        name: '首页',
+        component: ()=> import('./home') ,
+   },
+]
+复制代码
+```
+
+**React 中动态加载**
+
+```JavaScript
+const LazyComponent =  React.lazy(()=>import('./text'))
+class index extends React.Component{
+    render(){
+        return <React.Suspense fallback={ <div className="icon"><SyncOutlinespin/></div> } >
+               <LazyComponent /></React.Suspense>
+    }
+
+复制代码
+```
+
+`React.lazy` 和 `Suspense` 配合一起用，能够有动态加载组件的效果。`React.lazy` 接受一个函数，这个函数需要动态调用 `import()` 。
+
+`import()` 这种加载效果，可以很轻松的实现**代码分割**。避免一次性加载大量 js 文件，造成首次加载白屏时间过长的情况。
+
+### tree shaking 实现
+
+Tree Shaking 在 Webpack 中的实现，是用来尽可能的删除没有被使用过的代码，一些被 import 了但其实没有被使用的代码。比如以下场景：
+
+`a.js`：
+
+```JavaScript
+export let num = 1
+export const addNumber = ()=>{
+    num++
+}
+export const delNumber = ()=>{
+    num--
+}
+复制代码
+```
+
+`main.js`：
+
+```JavaScript
+import {  addNumber } from './a'
+addNumber()
+复制代码
+```
+
+- 如上 `a.js` 中暴露两个方法，`addNumber`和 `delNumber`，但是整个应用中，只用到了 `addNumber`，那么构建打包的时候，`delNumber`将作为没有引用的方法，不被打包进来。
+
+# 总结
+
+接下来贯穿全文，讲一下 `Commonjs` 和 `Es Module` 的特性。
+
+## Commonjs 总结
+
+`Commonjs` 的特性如下：
+
+- CommonJS 模块由 JS 运行时实现。
+- CommonJs 是单个值导出，本质上导出的就是 exports 属性。
+- CommonJS 是可以动态加载的，对每一个加载都存在缓存，可以有效的解决循环引用问题。
+- CommonJS 模块同步加载并执行模块文件。
+
+## es module 总结
+
+`Es module` 的特性如下：
+
+- ES6 Module 静态的，不能放在块级作用域内，代码发生在编译时。
+- ES6 Module 的值是动态绑定的，可以通过导出方法修改，可以直接访问修改结果。
+- ES6 Module 可以导出多个属性和方法，可以单个导入导出，混合导入导出。
+- ES6 模块提前加载并执行模块文件，
+- ES6 Module 导入模块在严格模式下。
+- ES6 Module 的特性可以很容易实现 Tree Shaking 和 Code Splitting。
