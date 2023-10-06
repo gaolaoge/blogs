@@ -30,7 +30,7 @@ echo 'gaolaogui.cc' >CNAME
 
 git init
 git add .
-git commit -m $commit_message
+git commit -m "$commit_message"
 
 # 如果发布到 https://<USERNAME>.github.io
 # git push -f git@github.com:<USERNAME>/<USERNAME>.github.io.git master
