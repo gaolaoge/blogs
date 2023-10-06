@@ -155,7 +155,11 @@ module.exports = {
           path: "/views/notes/REACT/Enter",
           // collapsable: false,
           // groupClass: true,
-          children: ["/views/notes/REACT/Hooks"],
+          children: [
+            "/views/notes/REACT/Hooks",
+            "/views/notes/REACT/Scheduler",
+            "/views/notes/REACT/AutomaticBatching"
+          ],
         },
         {
           title: "Webpack",
@@ -176,8 +180,10 @@ module.exports = {
           title: "前端工程化",
           path: "/views/notes/Engineering/Enter",
           // collapsable: false,
-          groupClass: true,
-          children: ["/views/notes/Engineering/Modules"],
+          // groupClass: true,
+          children: [
+            "/views/notes/Engineering/Modules"
+          ],
         },
       ],
     },
