@@ -3,7 +3,7 @@
   "author": "gaoge",
   "description": "A personal blogs.",
   "scripts": {
-    "dev": "NODE_OPTIONS=--openssl-legacy-provider vuepress dev example",
+    "start": "NODE_OPTIONS=--openssl-legacy-provider vuepress dev example",
     "build:example": "NODE_OPTIONS=--openssl-legacy-provider vuepress build example",
     "issue": "sh deploy.sh"
   },

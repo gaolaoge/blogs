@@ -157,7 +157,7 @@ module.exports = {
           // groupClass: true,
           children: [
             "/views/notes/REACT/Hooks",
-            "/views/notes/REACT/Scheduler",
+            // "/views/notes/REACT/Scheduler",
             "/views/notes/REACT/AutomaticBatching"
           ],
         },
@@ -182,9 +182,17 @@ module.exports = {
           // collapsable: false,
           // groupClass: true,
           children: [
-            "/views/notes/Engineering/Modules"
+            '/views/notes/Engineering/Modules'
           ],
         },
+        {
+          title: "HTTP",
+          path: "/views/notes/HTTP/Enter",
+          children: [
+            "/views/notes/HTTP/Message",
+            // "/views/notes/HTTP/Something"
+          ]
+        }
       ],
     },
     sidebarDepth: 0,
