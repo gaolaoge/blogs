@@ -189,7 +189,6 @@ module.exports = {
           title: "HTTP",
           path: "/views/notes/HTTP/Enter",
           children: [
-            "/views/notes/HTTP/RequestMethods",
             "/views/notes/HTTP/Message",
             "/views/notes/HTTP/Data",
             "/views/notes/HTTP/LargeFiles",
