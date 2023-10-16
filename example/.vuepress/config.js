@@ -189,8 +189,19 @@ module.exports = {
           title: "HTTP",
           path: "/views/notes/HTTP/Enter",
           children: [
+            "/views/notes/HTTP/RequestMethods",
             "/views/notes/HTTP/Message",
-            // "/views/notes/HTTP/Something"
+            "/views/notes/HTTP/Data",
+            "/views/notes/HTTP/LargeFiles",
+            "/views/notes/HTTP/Connect",
+            "/views/notes/HTTP/Jump",
+            // "/views/notes/HTTP/Cookies",
+            // "/views/notes/HTTP/Redirects",
+            // "/views/notes/HTTP/Caching",
+            // "/views/notes/HTTP/Security",
+            // "/views/notes/HTTP/HTTP2",
+            // "/views/notes/HTTP/HTTP3",
+            // "/views/notes/HTTP/HTTP1.1",
           ]
         }
       ],
