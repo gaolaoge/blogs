@@ -194,12 +194,9 @@ module.exports = {
             "/views/notes/HTTP/LargeFiles",
             "/views/notes/HTTP/Connect",
             "/views/notes/HTTP/Cookies",
-            // "/views/notes/HTTP/Redirects",
             "/views/notes/HTTP/Cache",
-            // "/views/notes/HTTP/Security",
-            // "/views/notes/HTTP/HTTP2",
-            // "/views/notes/HTTP/HTTP3",
-            // "/views/notes/HTTP/HTTP1.1",
+            "/views/notes/HTTP/Proxy",
+            "/views/notes/HTTP/HTTPS&TLS",
           ]
         }
       ],
