@@ -198,6 +198,16 @@ module.exports = {
             "/views/notes/HTTP/Proxy",
             "/views/notes/HTTP/HTTPS&TLS",
           ]
+        },
+        {
+          title: "Nginx",
+          path: "/views/notes/Nginx/Enter",
+          // collapsable: false,
+          // groupClass: true,
+          children: [
+            "/views/notes/Nginx/StaticDeployment",
+            "/views/notes/Nginx/Proxy&LoadBalance"
+          ]
         }
       ],
     },
