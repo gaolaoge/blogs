@@ -35,9 +35,6 @@ $ sudo nginx -s reload
 # 停止
 $ sudo nginx -s stop
 
-# 状态
-$ sudo nginx -s status
-
 # 查看版本
 $ nginx -v
 ```
