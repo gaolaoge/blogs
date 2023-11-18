@@ -224,6 +224,14 @@ module.exports = {
         name: "旅行",
         type: "travel",
       },
+      {
+        name: "读书",
+        type: "reading",
+      },
+      {
+        name: "摄影",
+        type: "photography",
+      }
     ],
 
     live2d: {
