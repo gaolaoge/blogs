@@ -5,7 +5,7 @@ mode: "notes"
 
 在 TCP/IP 协议栈里，传输数据基本上都是 **header+body** 的格式。  
 TCP、UDP 是传输层的协议，它们不会关心 body 数据是什么，只要把数据发送到对方就好。  
-而 HTTP 协议是应用层的协议，数据到达之后工作只能说是完成了一半，还必须要标记给对方层应用如何正确读取这个数据。
+而 HTTP 协议是应用层的协议，数据到达之后工作只能说是完成了 1 半，还必须要标记给对方层应用如何正确读取这个数据。
 
 > HTTP 协议定义了若干 Accept 请求头字段和两个 Content 实体头字段，用于客户端和服务器进行“内容协商”。  
 客户端用 Accept 头告诉服务器希望接收什么样的数据，服务器用 Content 头告诉客户端实际发送了什么样的数据。
@@ -14,10 +14,10 @@ TCP、UDP 是传输层的协议，它们不会关心 body 数据是什么，只�
 
 ### MIME type
 
-> 多用途互联网邮件扩展（Multipurpose Internet Mail Extensions），简称为 MIME。它在电子邮件系统中，使其可以发送 ASCII 码以外的任意数据。  
+> 多用途互联网邮件扩展（Multipurpose Internet Mail Extensions），简称为 MIME，是 1 个很大的标准规范。  
+它在电子邮件系统中，使其可以发送 ASCII 码以外的任意数据。  
 MIME 把数据分成若干大类，大类之下再细分出若干子类，形式是“type/subtype”的字符串。  
-MIME 是一个很大的标准规范，HTTP 只借鉴了其中的一部分，用来标记 body 的数据类型，这就是“MIME type”。  
-
+HTTP 只借鉴了其中的 1 部分，用来标记 body 的数据类型，这就是“MIME type”。  
 HTTP 中几个常见类别：
 
 - **text**：即文本格式的可读数据，如 text/html 表示超文本文档，纯文本 text/plain、样式表 text/css 等。
@@ -129,13 +129,13 @@ Content-Length 字段表示实体数据的长度，单位是字节。
 
 在 HTTP 协议里用 Accept、Accept-Encoding、Accept-Language 等请求头字段进行内容协商的时候，还可以用一种特殊的“q”参数表示权重来设定优先级，这里的“q”是“quality factor”的意思。
 
-权重的最大值是 1，最小值是 0.01，默认值是 1，如果值是 0 就表示拒绝。具体的形式是在数据类型或语言代码后面加一个“;”，然后是“q=value”。
+权重的最大值是 1，最小值是 0.01，默认值是 1，如果值是 0 就表示拒绝。具体的形式是在数据类型或语言代码后面加 1 个“;”，然后是“q=value”。
 
 ```http
 Accept: text/html,application/xml;q=0.9,*/*;q=0.8
 ```
 
-协商的过程是不透明的，的时候服务器会在响应头里多加一个 Vary 字段，记录服务器在内容协商时参考的请求头字段，给出一点信息。
+协商的过程是不透明的，的时候服务器会在响应头里多加 1 个 Vary 字段，记录服务器在内容协商时参考的请求头字段，给出 1 点信息。
 
 ```http
 Vary: Accept-Encoding,User-Agent,Accept

@@ -7,7 +7,7 @@ HTTP 可以传输很多种类的数据，不仅是文本，也能传输图片、
 
 ### 数据压缩
 
-通常浏览器在发送请求时都会带着“Accept-Encoding”头字段，里面是浏览器支持的压缩格式列表，例如 gzip、deflate、br 等，这样服务器就可以从中选择一种压缩算法，放进“Content-Encoding”响应头里，再把原数据压缩后发给浏览器。
+通常浏览器在发送请求时都会带着“Accept-Encoding”头字段，里面是浏览器支持的压缩格式列表，例如 gzip、deflate、br 等，这样服务器就可以从中选择 1 种压缩算法，放进“Content-Encoding”响应头里，再把原数据压缩后发给浏览器。
 
 但 gzip 等压缩算法通常只对文本文件有较好的压缩率，而图片、音频视频等多媒体数据本身就已经是高度压缩的，再用 gzip 处理也不会变小，甚至会适得其反。
 
@@ -109,10 +109,8 @@ Range: bytes=0-9, 20-29
 ```http
 HTTP/1.1 206 Partial Content
 Content-Type: multipart/byteranges; boundary=00000000001
-Content-Length: 189
 Connection: keep-alive
 Accept-Ranges: bytes
-
 
 --00000000001
 Content-Type: text/plain
