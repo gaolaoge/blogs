@@ -148,7 +148,10 @@ module.exports = {
           path: "/views/notes/ECMAScript/Enter",
           // collapsable: false,
           // groupClass: true,
-          children: ["/views/notes/ECMAScript/Promise"],
+          children: [
+            "/views/notes/ECMAScript/Promise",
+            "/views/notes/ECMAScript/API-showDirectoryPicker",
+          ],
         },
         {
           title: "React",
@@ -158,7 +161,7 @@ module.exports = {
           children: [
             "/views/notes/REACT/Hooks",
             // "/views/notes/REACT/Scheduler",
-            "/views/notes/REACT/AutomaticBatching"
+            "/views/notes/REACT/AutomaticBatching",
           ],
         },
         {
@@ -181,9 +184,7 @@ module.exports = {
           path: "/views/notes/Engineering/Enter",
           // collapsable: false,
           // groupClass: true,
-          children: [
-            '/views/notes/Engineering/Modules'
-          ],
+          children: ["/views/notes/Engineering/Modules"],
         },
         {
           title: "HTTP",
@@ -197,7 +198,7 @@ module.exports = {
             "/views/notes/HTTP/Cache",
             "/views/notes/HTTP/Proxy",
             "/views/notes/HTTP/HTTPS&TLS",
-          ]
+          ],
         },
         {
           title: "Nginx",
@@ -206,9 +207,9 @@ module.exports = {
           // groupClass: true,
           children: [
             "/views/notes/Nginx/StaticDeployment",
-            "/views/notes/Nginx/Proxy&LoadBalance"
-          ]
-        }
+            "/views/notes/Nginx/Proxy&LoadBalance",
+          ],
+        },
       ],
     },
     sidebarDepth: 0,
@@ -231,7 +232,7 @@ module.exports = {
       {
         name: "摄影",
         type: "photography",
-      }
+      },
     ],
 
     live2d: {
