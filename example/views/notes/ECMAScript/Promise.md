@@ -3,6 +3,26 @@ title: "Promise"
 mode: "notes"
 ---
 
+PromisesA+ 是 1 个社区规范，用来解决「回调地狱&异步实现不统一」的问题，ES6 提供了 Promise 构造函数，实现了 Promise 。
+
+规范规定：Promise 实例可以是对象或函数，确保存在 then 方法可以调用。
+
+只要符合 Promise 规范，不同原型的实例都可以相互调用操作。
+
+```js
+// 判断值是否为 Promise
+function isPromise(val) {
+  if (val !== null && typeof val === "object") {
+    if ("then" in val) {
+      return true;
+    }
+  }
+  return false;
+}
+```
+
+## ES6 Promise 规范
+
 Promise 是一个对象，对象和函数的区别就是对象可以保存状态，函数不可以（闭包除外）。
 
 Promise 对异步动作抽象处理：它先接收一个函数，并通过 then 预先保存处理动作，内部「状态」改变后执行处理动作，通过链式调用，避免了异步编程的回调地狱情况。
@@ -46,7 +66,7 @@ class HD {
       this.status = HD.FULFILLED;
       this.value = value;
       setTimeout(() => {
-        this.callbacks.forEach((callback) => callback.onFulfilled(value));
+        this.callbacks.forEach(callback => callback.onFulfilled(value));
       });
     }
   }
@@ -56,32 +76,24 @@ class HD {
       this.status = HD.REJECTED;
       this.value = reason;
       setTimeout(() => {
-        this.callbacks.forEach((callback) => callback.onRejected(reason));
+        this.callbacks.forEach(callback => callback.onRejected(reason));
       });
     }
   }
 
   then(onFulfilled, onRejected) {
-    onFulfilled =
-      typeof onFulfilled === "function" ? onFulfilled : (value) => value;
-    onRejected =
-      typeof onRejected === "function" ? onRejected : (value) => value;
+    onFulfilled = typeof onFulfilled === "function" ? onFulfilled : value => value;
+    onRejected = typeof onRejected === "function" ? onRejected : value => value;
 
     let promise = new HD((resolve, reject) => {
       if (this.status === HD.FULFILLED) {
-        setTimeout(() =>
-          this.parse(promise, onFulfilled(this.value), resolve, reject)
-        );
+        setTimeout(() => this.parse(promise, onFulfilled(this.value), resolve, reject));
       } else if (this.status === HD.REJECTED) {
-        setTimeout(() =>
-          this.parse(promise, onRejected(this.value), resolve, reject)
-        );
+        setTimeout(() => this.parse(promise, onRejected(this.value), resolve, reject));
       } else if (this.status === HD.PENDING) {
         this.callbacks.push({
-          onFulfilled: (value) =>
-            this.parse(promise, onFulfilled(value), resolve, reject),
-          onRejected: (reason) =>
-            this.parse(promise, onRejected(reason), resolve, reject),
+          onFulfilled: value => this.parse(promise, onFulfilled(value), resolve, reject),
+          onRejected: reason => this.parse(promise, onRejected(reason), resolve, reject)
         });
       }
     });
@@ -89,8 +101,7 @@ class HD {
   }
 
   parse(promise, result, resolve, reject) {
-    if (promise == result)
-      throw new TypeError("Chaining cycle detected for promise");
+    if (promise == result) throw new TypeError("Chaining cycle detected for promise");
     try {
       if (result instanceof HD) result.then(resolve, reject);
       else resolve(result);
@@ -117,16 +128,15 @@ class HD {
       promises.forEach((promise, index) => {
         try {
           promise.then(
-            (data) => {
+            data => {
               result[index] = data;
-              if (!result.some((item) => item === parameter_null))
-                resolve(result);
+              if (!result.some(item => item === parameter_null)) resolve(result);
             },
-            (err) => reject(err)
+            err => reject(err)
           );
           result.push();
         } catch (reason) {
-          (err) => reject(reason);
+          err => reject(reason);
         }
       });
     });
@@ -134,14 +144,14 @@ class HD {
 
   static race(promises) {
     return new HD((resolve, reject) => {
-      promises.forEach((promise) => {
+      promises.forEach(promise => {
         try {
           promise.then(
-            (data) => resolve(data),
-            (err) => reject(err)
+            data => resolve(data),
+            err => reject(err)
           );
         } catch (reason) {
-          (err) => reject(reason);
+          err => reject(reason);
         }
       });
     });
