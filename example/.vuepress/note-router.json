@@ -1,0 +1,50 @@
+{
+  "notes": [
+    "/views/notes/Enter",
+    {
+      "title": "ECMAScript",
+      "path": "/views/notes/ECMAScript/Enter",
+      "children": ["/views/notes/ECMAScript/Promise", "/views/notes/ECMAScript/API-showDirectoryPicker"]
+    },
+    {
+      "title": "React",
+      "path": "/views/notes/REACT/Enter",
+      "children": ["/views/notes/REACT/Hooks", "/views/notes/REACT/AutomaticBatching"]
+    },
+    {
+      "title": "Webpack",
+      "path": "/views/notes/WEBPACK/Enter",
+      "children": [
+        "/views/notes/WEBPACK/Options",
+        "/views/notes/WEBPACK/Babel&TS&ESLint",
+        "/views/notes/WEBPACK/Styles",
+        "/views/notes/WEBPACK/VUE&REACT",
+        "/views/notes/WEBPACK/Img"
+      ]
+    },
+    {
+      "title": "前端工程化",
+      "path": "/views/notes/Engineering/Enter",
+      "children": ["/views/notes/Engineering/Modules"]
+    },
+    {
+      "title": "HTTP",
+      "path": "/views/notes/HTTP/Enter",
+      "children": [
+        "/views/notes/HTTP/Message",
+        "/views/notes/HTTP/Data",
+        "/views/notes/HTTP/LargeFiles",
+        "/views/notes/HTTP/Connect",
+        "/views/notes/HTTP/Cookies",
+        "/views/notes/HTTP/Cache",
+        "/views/notes/HTTP/Proxy",
+        "/views/notes/HTTP/HTTPS&TLS"
+      ]
+    },
+    {
+      "title": "Nginx",
+      "path": "/views/notes/Nginx/Enter",
+      "children": ["/views/notes/Nginx/StaticDeployment", "/views/notes/Nginx/Proxy&LoadBalance"]
+    }
+  ]
+}

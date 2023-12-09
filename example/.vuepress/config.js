@@ -1,11 +1,12 @@
 const path = require("path");
+const noteRouter = require("./note-router.json");
 
 module.exports = {
   title: "不喜欢咖啡味道的龟",
   dest: "example/dist",
   base: "/",
   plugins: {
-    "@vuepress/back-to-top": true,
+    "@vuepress/back-to-top": true
   },
   head: [["link", { rel: "icon", href: "./img/favicon.ico" }]],
   theme: require.resolve("../../packages/vuepress-theme-gnas"),
@@ -13,7 +14,7 @@ module.exports = {
     smoothScroll: true,
     themeMode: {
       enable: true,
-      default: "light",
+      default: "light"
     },
     // 锁定页面默认密码，请使用MD5，4位数MD5加密后的密码
     password: "81dc9bdb52d04dc20036dbd8313ed055",
@@ -25,7 +26,7 @@ module.exports = {
     // blogItem配置
     blogItemCofig: {
       // 日期格式化
-      dateFormat: "MM dd,yyyy",
+      dateFormat: "MM dd,yyyy"
     },
     // 全站访问量
     globalAccess: true,
@@ -33,7 +34,7 @@ module.exports = {
     valine: {
       enable: true,
       appId: "ni92DJP02t9rMtuQiY6ISzds-gzGzoHsz",
-      appKey: "9CGy91FHydunpYJAy7youFx2",
+      appKey: "9CGy91FHydunpYJAy7youFx2"
     },
 
     // 加入公益404计划，默认为true
@@ -45,13 +46,13 @@ module.exports = {
       list: [
         {
           name: "阿梨粤_秒针",
-          href: "./music/阿梨粤 - 秒针.mp3",
+          href: "./music/阿梨粤 - 秒针.mp3"
         },
         {
           name: "姜涵_人体解冻",
-          href: "./music/姜涵 - 人体解冻.mp3",
-        },
-      ],
+          href: "./music/姜涵 - 人体解冻.mp3"
+        }
+      ]
     },
     logo: "/img/logo.png",
     home: {
@@ -70,7 +71,7 @@ module.exports = {
         "./img/bg7.jpeg",
         "./img/bg8.jpeg",
         "./img/bg9.jpeg",
-        "./img/bg11.jpeg",
+        "./img/bg11.jpeg"
       ],
       authorConfig: {
         enable: true,
@@ -79,7 +80,7 @@ module.exports = {
         github: "https://github.com/gaolaoge",
         qq: 183412808,
         wx: "gaolaogui2",
-        email: "183412808@qq.com",
+        email: "183412808@qq.com"
         // alipay: "/img/alipay_ercode.jpg",
       },
       loveConfig: false,
@@ -89,18 +90,18 @@ module.exports = {
           {
             title: "日志",
             content: "愿从此不再匆匆忙忙，用心感受每一天。",
-            bg: "./img/carousel1.jpeg",
+            bg: "./img/carousel1.jpeg"
           },
           {
             title: "学习",
             content: "摄取知识不是人生某个阶段的工作，是贯穿人生的快乐源泉。",
-            bg: "./img/carousel2.jpeg",
-          },
-        ],
+            bg: "./img/carousel2.jpeg"
+          }
+        ]
       },
       tagConfig: {
-        enable: true,
-      },
+        enable: true
+      }
     },
     // 备案号
     // record: "浙ICP备00000000号-0",
@@ -117,11 +118,11 @@ module.exports = {
     nav: [
       {
         text: "首页",
-        link: "/",
+        link: "/"
       },
       {
         text: "日志",
-        link: "/views/Tag",
+        link: "/views/Tag"
       },
       //   {
       //     text: "相册",
@@ -129,89 +130,18 @@ module.exports = {
       //   },
       {
         text: "笔记",
-        link: "/views/notes/Enter",
+        link: "/views/notes/Enter"
       },
       {
         text: "简历",
-        link: "/views/vitae/Enter",
+        link: "/views/vitae/Enter"
       },
       {
         text: "GitHub",
-        link: "https://github.com/gaolaoge/blogs",
-      },
+        link: "https://github.com/gaolaoge/blogs"
+      }
     ],
-    sidebars: {
-      notes: [
-        "/views/notes/Enter",
-        {
-          title: "ECMAScript",
-          path: "/views/notes/ECMAScript/Enter",
-          // collapsable: false,
-          // groupClass: true,
-          children: [
-            "/views/notes/ECMAScript/Promise",
-            "/views/notes/ECMAScript/API-showDirectoryPicker",
-          ],
-        },
-        {
-          title: "React",
-          path: "/views/notes/REACT/Enter",
-          // collapsable: false,
-          // groupClass: true,
-          children: [
-            "/views/notes/REACT/Hooks",
-            // "/views/notes/REACT/Scheduler",
-            "/views/notes/REACT/AutomaticBatching",
-          ],
-        },
-        {
-          title: "Webpack",
-          path: "/views/notes/WEBPACK/Enter",
-          // collapsable: false,
-          // groupClass: true,
-          children: [
-            "/views/notes/WEBPACK/Options",
-            "/views/notes/WEBPACK/Babel&TS&ESLint",
-            "/views/notes/WEBPACK/Styles",
-            "/views/notes/WEBPACK/VUE&REACT",
-            "/views/notes/WEBPACK/Img",
-            // "/views/notes/WEBPACK/PerformanceAnalysis",
-            // "/views/notes/WEBPACK/LifeCycle",
-          ],
-        },
-        {
-          title: "前端工程化",
-          path: "/views/notes/Engineering/Enter",
-          // collapsable: false,
-          // groupClass: true,
-          children: ["/views/notes/Engineering/Modules"],
-        },
-        {
-          title: "HTTP",
-          path: "/views/notes/HTTP/Enter",
-          children: [
-            "/views/notes/HTTP/Message",
-            "/views/notes/HTTP/Data",
-            "/views/notes/HTTP/LargeFiles",
-            "/views/notes/HTTP/Connect",
-            "/views/notes/HTTP/Cookies",
-            "/views/notes/HTTP/Cache",
-            "/views/notes/HTTP/Proxy",
-            "/views/notes/HTTP/HTTPS&TLS",
-          ],
-        },
-        {
-          title: "Nginx",
-          path: "/views/notes/Nginx/Enter",
-          // collapsable: false,
-          // groupClass: true,
-          children: [
-            "/views/notes/Nginx/StaticDeployment",
-            "/views/notes/Nginx/Proxy&LoadBalance",
-          ],
-        },
-      ],
-    },
+    sidebars: noteRouter,
     sidebarDepth: 0,
     activeHeaderLinks: false,
 
@@ -219,24 +149,24 @@ module.exports = {
     tagList: [
       {
         name: "生活",
-        type: "life",
+        type: "life"
       },
       {
         name: "旅行",
-        type: "travel",
+        type: "travel"
       },
       {
         name: "读书",
-        type: "reading",
+        type: "reading"
       },
       {
         name: "摄影",
-        type: "photography",
-      },
+        type: "photography"
+      }
     ],
 
     live2d: {
-      model: "hijiki",
-    },
-  },
+      model: "hijiki"
+    }
+  }
 };
