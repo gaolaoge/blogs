@@ -5,16 +5,22 @@
   "scripts": {
     "start": "NODE_OPTIONS=--openssl-legacy-provider vuepress dev example",
     "build:example": "NODE_OPTIONS=--openssl-legacy-provider vuepress build example",
-    "issue": "sh deploy.sh"
+    "issue": "sh deploy.sh",
+    "commitlint": "commitlint --config commitlint.config.js -e -V"
   },
   "devDependencies": {
+    "@commitlint/cli": "^18.4.3",
+    "@commitlint/config-conventional": "^18.4.3",
+    "@gaoges/lint-config": "^1.0.1",
     "@vuepress/plugin-back-to-top": "^1.9.7",
     "@vuepress/plugin-nprogress": "^1.9.7",
     "async-validator": "^4.2.5",
     "element-ui": "^2.15.12",
+    "husky": "^8.0.3",
     "js-md5": "^0.7.3",
     "leancloud-storage": "^4.15.0",
     "loadsh": "^0.0.4",
+    "prettier": "^3.1.0",
     "valine": "^1.5.1",
     "valine-gnas": "^1.0.2",
     "vuepress": "^1.9.7",
