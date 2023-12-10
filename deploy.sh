@@ -22,6 +22,9 @@ git push
 # 生成静态文件
 npm run build:example
 
+# 追加dns预解析
+node dns-prefetch.js
+
 # 进入生成的文件夹
 cd example/dist
 
@@ -32,10 +35,5 @@ git init
 git add .
 git commit -m "$commit_message"
 
-# 如果发布到 https://<USERNAME>.github.io
-# git push -f git@github.com:<USERNAME>/<USERNAME>.github.io.git master
-
 # 如果发布到 https://<USERNAME>.github.io/<REPO>
 git push -f git@github.com:gaolaoge/blogs.git master:gh-pages
-
-cd -
