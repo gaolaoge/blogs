@@ -61,18 +61,7 @@ module.exports = {
       title: "说说我的生活",
       description: "Think twice before you do.",
 
-      bannerList: [
-        "./img/bg1.jpeg",
-        "./img/bg2.jpeg",
-        "./img/bg3.jpeg",
-        "./img/bg4.jpeg",
-        "./img/bg5.jpeg",
-        "./img/bg6.jpeg",
-        "./img/bg7.jpeg",
-        "./img/bg8.jpeg",
-        "./img/bg9.jpeg",
-        "./img/bg11.jpeg"
-      ],
+      bannerList: ["./img/bg1.jpeg", "./img/bg2.jpg", "./img/bg3.jpg", "./img/bg4.jpg"],
       authorConfig: {
         enable: true,
         avatar: "./img/avatar.jpeg",
