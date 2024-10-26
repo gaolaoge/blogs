@@ -24,6 +24,7 @@
     "loadsh": "^0.0.4",
     "node-html-parser": "^6.1.11",
     "prettier": "^3.1.0",
+    "semver": "^7.6.3",
     "url-regex": "^5.0.0",
     "valine": "^1.5.1",
     "valine-gnas": "^1.0.2",
